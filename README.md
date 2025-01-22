@@ -66,7 +66,7 @@ This is one way to run your app — you can also build it directly from Android 
 
 Now that you have successfully run the app, let's make changes!
 
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
+Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
 
 When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
 
@@ -95,3 +95,233 @@ To learn more about React Native, take a look at the following resources:
 - [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
 - [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
 - [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+
+# TravelApp - React Native Project
+
+> This app is designed to work seamlessly on both iOS and Android platforms, providing a consistent experience across devices.
+
+## Project Setup
+
+### Prerequisites
+
+- Node.js >= 18
+- JDK 17
+- Android Studio and Android SDK
+- React Native CLI
+
+### Dependencies
+
+```json
+{
+  "dependencies": {
+    "@react-navigation/native": "6.1.9",
+    "@react-navigation/native-stack": "6.9.17",
+    "react": "18.2.0",
+    "react-native": "0.72.17",
+    "react-native-linear-gradient": "2.8.3",
+    "react-native-paper": "5.13.1",
+    "react-native-safe-area-context": "4.7.4",
+    "react-native-screens": "4.0.0",
+    "react-native-vector-icons": "10.2.0"
+  },
+  "devDependencies": {
+    "@babel/core": "7.26.0",
+    "@babel/preset-env": "7.25.3",
+    "@babel/runtime": "7.26.0",
+    "@react-native-community/cli": "15.0.1",
+    "@react-native-community/cli-platform-android": "15.0.1",
+    "@react-native-community/cli-platform-ios": "15.0.1",
+    "@react-native/babel-preset": "0.77.0",
+    "@react-native/gradle-plugin": "0.72.11",
+    "@react-native/metro-config": "0.77.0",
+    "@react-native/typescript-config": "0.77.0",
+    "@types/jest": "29.5.13",
+    "@types/react": "18.2.6",
+    "@types/react-native": "0.72.8",
+    "@types/react-test-renderer": "18.0.0",
+    "jest": "29.6.3",
+    "metro-react-native-babel-preset": "0.77.0",
+    "prettier": "2.8.8",
+    "react-test-renderer": "18.2.0",
+    "typescript": "5.0.4"
+  }
+}
+```
+
+### Project Structure
+
+```
+TravelApp/
+├── android/                 # Android native code
+├── src/
+│   ├── assets/             # Images and other assets
+│   │   ├── mountain.jpg    # Welcome screen background
+│   │   ├── destination1.jpg
+│   │   └── architecture.jpg
+│   └── screens/            # React Native screens
+│       ├── WelcomeScreen.js
+│       ├── ExploreScreen.js
+│       └── DetailScreen.js
+├── App.js                  # Main app component
+├── index.js               # Entry point
+├── app.json              # App configuration
+└── package.json
+```
+
+## Installation Steps
+
+1. **Initial Setup**
+
+   ```bash
+   # Create a new directory and navigate into it
+   mkdir REACT_NATIVE && cd REACT_NATIVE
+
+   # Create the React Native project
+   npx react-native@0.72.17 init TravelApp
+
+   cd TravelApp
+   ```
+
+2. **Install Dependencies**
+
+   ```bash
+   # Install navigation dependencies
+   npm install @react-navigation/native@6.1.9 @react-navigation/native-stack@6.9.17
+
+   # Install required native dependencies
+   npm install react-native-screens@4.0.0 react-native-safe-area-context@4.7.4
+
+   # Install UI components and utilities
+   npm install react-native-linear-gradient@2.8.3 react-native-paper@5.13.1 react-native-vector-icons@10.2.0
+   ```
+
+3. **Asset Setup**
+
+   - Create `src/assets` directory
+   - Add required images:
+     - `mountain.jpg` (Welcome screen background)
+     - `destination1.jpg` (Explore screen)
+     - `architecture.jpg` (Explore screen)
+
+4. **Android Configuration**
+
+   ```bash
+   # Navigate to android directory
+   cd android
+
+   # Clean the project
+   ./gradlew clean
+
+   # Return to project root
+   cd ..
+   ```
+
+## Running the App
+
+1. **Start Metro Server**
+
+   ```bash
+   # Start with clean cache (recommended for first run)
+   npx react-native start --reset-cache
+   ```
+
+2. **Run on Android**
+   ```bash
+   # In a new terminal
+   npx react-native run-android
+   ```
+
+## Troubleshooting
+
+1. **Port 8081 Already in Use**
+
+   ```bash
+   # Kill the process using port 8081
+   npx kill-port 8081
+   # Or more aggressively
+   pkill -f metro
+   ```
+
+2. **Metro Bundler Issues**
+
+   ```bash
+   # Clear Metro cache
+   npx react-native start --reset-cache
+   ```
+
+3. **Navigation Issues**
+
+   - Ensure all screen components are properly exported
+   - Check navigation stack configuration in App.js
+   - Verify import paths are correct
+   - Make sure react-native-screens version is 4.0.0 or compatible
+
+4. **Build Issues**
+
+   ```bash
+   # Clean Android build
+   cd android && ./gradlew clean && cd ..
+
+   # Remove node_modules and reinstall
+   rm -rf node_modules package-lock.json
+   npm install
+   ```
+
+## Important Notes
+
+1. **Version Compatibility**
+
+   - React Native version must be 0.72.17
+   - React Navigation versions must match exactly as specified
+   - react-native-screens must be version 4.0.0 for compatibility
+
+2. **Asset Requirements**
+
+   - All images should be high quality and properly sized
+   - Recommended to use .jpg format for backgrounds
+   - Place all assets in src/assets directory
+
+3. **Android Setup**
+   - Minimum SDK version: 21
+   - Target SDK version: 33
+   - Compile SDK version: 33
+   - JDK version: 17
+
+## Development Tips
+
+1. **Metro Development Server**
+
+   ```bash
+   # Preferred way to start Metro
+   npx react-native start --reset-cache
+   ```
+
+2. **Android Development**
+
+   ```bash
+   # Full clean build (use when having issues)
+   cd android && ./gradlew clean && cd .. && npx react-native run-android
+   ```
+
+3. **Port Forwarding**
+   ```bash
+   # If Metro isn't connecting
+   adb reverse tcp:8081 tcp:8081
+   ```
+
+## Known Issues and Solutions
+
+1. **Navigation Type Errors**
+
+   - Solution: Use exact versions specified in dependencies
+   - Ensure all screen components have default exports
+
+2. **Metro Bundler Warnings**
+
+   - Ignore warnings about "server.forwardClientLogs" and "watcher.unstable_workerThreads"
+   - These are known issues with Metro 0.76.9
+
+3. **Image Loading Issues**
+   - Ensure images are in the correct directory
+   - Use require() syntax for local images
+   - Verify image paths are correct

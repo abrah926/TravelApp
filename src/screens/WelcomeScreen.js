@@ -1,41 +1,81 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
   Dimensions,
+  ImageBackground,
+  Animated,
+  StatusBar,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 
 const {width, height} = Dimensions.get('window');
 
 const WelcomeScreen = ({navigation}) => {
+  const fadeAnim = new Animated.Value(0);
+  const translateY = new Animated.Value(20);
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 1000,
+        useNativeDriver: true,
+      }),
+      Animated.timing(translateY, {
+        toValue: 0,
+        duration: 1000,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  }, []);
+
   return (
     <View style={styles.container}>
-      <LinearGradient
-        colors={['#1a2a6c', '#b21f1f', '#fdbb2d']}
-        style={styles.gradient}>
-        <View style={styles.contentContainer}>
-          <View style={styles.logoContainer}>
-            {/* Add your logo here */}
-          </View>
-          <Text style={styles.title}>Unveil the</Text>
-          <Text style={styles.subtitle}>Travel Wonders</Text>
-          <Text style={styles.location}>NORWAY</Text>
-          <Text style={styles.description}>
-            Take the first step on an unforgettable journey
-          </Text>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => navigation.navigate('Explore')}>
-            <Text style={styles.buttonText}>Discover More</Text>
-          </TouchableOpacity>
-          <Text style={styles.terms}>
-            By joining us, you agree to terms & conditions
-          </Text>
-        </View>
-      </LinearGradient>
+      <StatusBar translucent backgroundColor="transparent" />
+      <ImageBackground
+        source={require('../assets/mountain.jpg')}
+        style={styles.background}
+        imageStyle={styles.backgroundImage}>
+        <LinearGradient
+          colors={[
+            'transparent',
+            'rgba(0,0,0,0.4)',
+            'rgba(0,0,0,0.8)',
+            'rgba(0,0,0,0.9)',
+          ]}
+          locations={[0, 0.4, 0.75, 1]}
+          style={styles.gradient}>
+          <Animated.View
+            style={[
+              styles.contentContainer,
+              {
+                opacity: fadeAnim,
+                transform: [{translateY}],
+              },
+            ]}>
+            <Text style={styles.title}>Dare to</Text>
+            <Text style={styles.subtitle}>Dream in San Juan</Text>
+            <Text style={styles.location}>PUERTO RICO</Text>
+            <Text style={styles.description}>
+              Take the first step on an unforgettable journey
+            </Text>
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => navigation.navigate('Explore')}>
+              <LinearGradient
+                colors={['rgba(255,255,255,0.3)', 'rgba(255,255,255,0.2)']}
+                start={{x: 0, y: 0}}
+                end={{x: 1, y: 0}}
+                style={styles.buttonGradient}>
+                <Text style={styles.buttonText}>Discover More</Text>
+              </LinearGradient>
+            </TouchableOpacity>
+          </Animated.View>
+        </LinearGradient>
+      </ImageBackground>
     </View>
   );
 };
@@ -43,6 +83,14 @@ const WelcomeScreen = ({navigation}) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  background: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+  },
+  backgroundImage: {
+    resizeMode: 'cover',
   },
   gradient: {
     flex: 1,
@@ -53,51 +101,68 @@ const styles = StyleSheet.create({
   contentContainer: {
     alignItems: 'center',
   },
-  logoContainer: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    marginBottom: 20,
-  },
   title: {
     fontSize: 42,
     color: '#fff',
     fontWeight: '300',
+    textShadowColor: 'rgba(0, 0, 0, 0.3)',
+    textShadowOffset: {width: 0, height: 2},
+    textShadowRadius: 3,
   },
   subtitle: {
-    fontSize: 42,
+    fontSize: 36,
     color: '#fff',
     fontWeight: 'bold',
     marginBottom: 10,
+    textShadowColor: 'rgba(0, 0, 0, 0.3)',
+    textShadowOffset: {width: 0, height: 2},
+    textShadowRadius: 3,
   },
   location: {
     fontSize: 16,
     color: '#fff',
     letterSpacing: 4,
     marginBottom: 20,
+    textShadowColor: 'rgba(0, 0, 0, 0.3)',
+    textShadowOffset: {width: 0, height: 1},
+    textShadowRadius: 2,
   },
   description: {
     fontSize: 16,
-    color: 'rgba(255,255,255,0.8)',
+    color: 'rgba(255,255,255,0.9)',
     textAlign: 'center',
     marginBottom: 30,
+    textShadowColor: 'rgba(0, 0, 0, 0.3)',
+    textShadowOffset: {width: 0, height: 1},
+    textShadowRadius: 2,
   },
   button: {
-    paddingHorizontal: 30,
-    paddingVertical: 15,
+    width: width * 0.7,
+    height: 50,
     borderRadius: 25,
-    backgroundColor: 'rgba(255,255,255,0.2)',
+    overflow: 'hidden',
     marginBottom: 20,
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+  },
+  buttonGradient: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   buttonText: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: '600',
-  },
-  terms: {
-    color: 'rgba(255,255,255,0.6)',
-    fontSize: 12,
+    textShadowColor: 'rgba(0, 0, 0, 0.3)',
+    textShadowOffset: {width: 0, height: 1},
+    textShadowRadius: 2,
   },
 });
 
