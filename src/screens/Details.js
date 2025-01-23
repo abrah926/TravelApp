@@ -1,136 +1,113 @@
 import React from 'react';
 import {
   View,
-  Text,
   StyleSheet,
-  TouchableOpacity,
-  Dimensions,
   ImageBackground,
+  StatusBar,
+  ScrollView,
 } from 'react-native';
+import { Text, IconButton } from 'react-native-paper';
 import LinearGradient from 'react-native-linear-gradient';
-import Icon from 'react-native-vector-icons/Ionicons';
 
-const {width, height} = Dimensions.get('window');
+const Details = ({ route, navigation }) => {
+  const { event } = route.params || {};
 
-const Details = ({navigation}) => {
   return (
-    <ImageBackground
-      source={require('../assets/architecture.jpg')}
-      style={styles.background}>
-      <LinearGradient
-        colors={['transparent', 'rgba(0,0,0,0.9)']}
-        style={styles.gradient}>
-        <View style={styles.header}>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Icon name="arrow-back" size={24} color="#fff" />
-          </TouchableOpacity>
-          <TouchableOpacity>
-            <Icon name="heart-outline" size={24} color="#fff" />
-          </TouchableOpacity>
-        </View>
+    <View style={styles.container}>
+      <StatusBar translucent backgroundColor="transparent" barStyle="light-content" />
+      
+      <ImageBackground
+        source={event?.image}
+        style={styles.header}
+      >
+        <LinearGradient
+          colors={['rgba(0,0,0,0.7)', 'transparent']}
+          style={styles.gradient}
+        >
+          <IconButton
+            icon="arrow-left"
+            iconColor="#fff"
+            size={24}
+            onPress={() => navigation.goBack()}
+            style={styles.backButton}
+          />
+          <Text style={styles.title}>{event?.title}</Text>
+        </LinearGradient>
+      </ImageBackground>
 
-        <View style={styles.content}>
-          <Text style={styles.title}>Salsa Night</Text>
-          <Text style={styles.subtitle}>La Placita, San Juan</Text>
-          <Text style={styles.description}>
-            Join us for an unforgettable night of salsa dancing at the heart of San Juan.
-            Live music, professional dancers, and the vibrant atmosphere of Puerto Rico's
-            most famous salsa spot.
-          </Text>
-
-          <View style={styles.footer}>
-            <View style={styles.priceContainer}>
-              <Text style={styles.priceLabel}>Entry</Text>
-              <Text style={styles.price}>$15</Text>
-              <Text style={styles.priceUnit}>/person</Text>
-            </View>
-            <TouchableOpacity style={styles.button}>
-              <Text style={styles.buttonText}>Book Now</Text>
-            </TouchableOpacity>
+      <ScrollView style={styles.content}>
+        <View style={styles.infoSection}>
+          <View style={styles.infoRow}>
+            <IconButton icon="clock" size={24} />
+            <Text style={styles.infoText}>{event?.time}</Text>
           </View>
+          
+          <View style={styles.infoRow}>
+            <IconButton icon="map-marker" size={24} />
+            <Text style={styles.infoText}>
+              {`Lat: ${event?.location?.lat}, Lng: ${event?.location?.lng}`}
+            </Text>
+          </View>
+
+          <Text style={styles.description}>
+            Event details will be populated from the database. This is a placeholder description.
+          </Text>
         </View>
-      </LinearGradient>
-    </ImageBackground>
+      </ScrollView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#1a1a1a',
+  },
+  header: {
+    height: 300,
   },
   gradient: {
     flex: 1,
-    paddingHorizontal: 20,
+    padding: 16,
+    paddingTop: StatusBar.currentHeight + 16,
   },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingTop: 50,
+  backButton: {
+    backgroundColor: 'rgba(0,0,0,0.3)',
+    margin: 8,
+  },
+  title: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    color: '#fff',
+    marginTop: 'auto',
+    marginHorizontal: 16,
+    textShadowColor: 'rgba(0,0,0,0.75)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 3,
   },
   content: {
     flex: 1,
-    justifyContent: 'flex-end',
-    paddingBottom: 40,
+    backgroundColor: '#fff',
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    marginTop: -24,
   },
-  title: {
-    fontSize: 42,
-    color: '#fff',
-    fontWeight: '300',
+  infoSection: {
+    padding: 24,
   },
-  subtitle: {
-    fontSize: 42,
-    color: '#fff',
-    fontWeight: 'bold',
+  infoRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
   },
-  location: {
+  infoText: {
     fontSize: 16,
-    color: '#fff',
-    letterSpacing: 4,
-    marginTop: 10,
-    marginBottom: 20,
+    marginLeft: 8,
   },
   description: {
     fontSize: 16,
-    color: 'rgba(255,255,255,0.8)',
     lineHeight: 24,
-    marginBottom: 30,
-  },
-  footer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  priceLabel: {
-    color: 'rgba(255,255,255,0.6)',
-    fontSize: 14,
-  },
-  price: {
-    color: '#fff',
-    fontSize: 24,
-    fontWeight: 'bold',
-  },
-  button: {
-    paddingHorizontal: 30,
-    paddingVertical: 15,
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    borderRadius: 25,
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  priceContainer: {
-    flexDirection: 'row',
-    alignItems: 'baseline',
-  },
-  priceUnit: {
-    color: 'rgba(255,255,255,0.6)',
-    fontSize: 14,
-  },
-  background: {
-    flex: 1,
+    marginTop: 16,
   },
 });
 

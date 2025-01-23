@@ -261,6 +261,52 @@ Salsa/
    - These are known issues with Metro 0.76.9
 
 3. **Image Loading Issues**
+
    - Ensure images are in the correct directory
    - Use require() syntax for local images
    - Verify image paths are correct
+
+4. **Metro Bundler Stack Trace Error**
+   Error Stack:
+
+   ```
+   processBundleResult
+   BundleDownloader.java:264
+
+   -$$Nest$mprocessBundleResult
+   null
+
+   onChunkComplete
+   BundleDownloader.java:193
+
+   emitChunk
+   MultipartStreamReader.java:70
+
+   readAllParts
+   MultipartStreamReader.java:152
+
+   processMultipartResponse
+   BundleDownloader.java:177
+
+   -$$Nest$mprocessMultipartResponse
+   null
+   ```
+
+   Solution:
+
+   1. Check component import paths (use absolute paths)
+   2. Update image require statements to use full paths
+   3. Clean steps:
+      ```bash
+      cd /path/to/Salsa
+      watchman watch-del-all
+      rm -rf node_modules/.cache
+      pkill -f metro
+      npx metro serve --port 8081
+      ```
+   4. In a new terminal:
+      ```bash
+      npx react-native run-android
+      ```
+
+   Root Cause: The error occurs when Metro bundler can't resolve relative paths correctly, especially after adding new components or moving files. Using absolute paths and clearing the Metro cache resolves the issue.

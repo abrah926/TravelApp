@@ -7,6 +7,7 @@ import {
   ImageBackground,
   Animated,
   PanResponder,
+  Easing,
 } from 'react-native';
 import { Text, IconButton, Surface } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -17,7 +18,7 @@ const { width, height } = Dimensions.get('window');
 const SAMPLE_EVENTS = [
   {
     id: 1,
-    title: 'Salsa Night\nFever',
+    title: 'Salsa Night Fever',
     date: new Date(2024, 0, 15),
     time: '20:00',
     location: { lat: 18.4655, lng: -66.1057 },
@@ -25,7 +26,7 @@ const SAMPLE_EVENTS = [
   },
   {
     id: 2,
-    title: 'Bachata Under\nStars',
+    title: 'Bachata Under Stars',
     date: new Date(2024, 0, 18),
     time: '21:00',
     location: { lat: 18.4571, lng: -66.1185 },
@@ -33,7 +34,7 @@ const SAMPLE_EVENTS = [
   },
   {
     id: 3,
-    title: 'Latin Dance\nSocial',
+    title: 'Latin Dance Social',
     date: new Date(2024, 0, 20),
     time: '19:30',
     location: { lat: 18.4499, lng: -66.0988 },
@@ -51,71 +52,93 @@ const Events = ({ navigation }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const position = useRef(new Animated.ValueXY()).current;
   const scale = useRef(new Animated.Value(1)).current;
-  const rotate = useRef(new Animated.Value(0)).current;
+  const rotateX = useRef(new Animated.Value(0)).current;
+  const translateY = useRef(new Animated.Value(0)).current;
   const nextScale = useRef(new Animated.Value(0.9)).current;
 
   const panResponder = useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: () => true,
-      onMoveShouldSetPanResponder: () => true,
-      onPanResponderMove: (_, { dx, dy }) => {
-        position.setValue({ x: dx, y: dy });
-        const yDelta = Math.abs(dy);
-        const newScale = Math.max(0.9, 1 - yDelta / 500);
-        scale.setValue(newScale);
-        rotate.setValue(dy / 15);
-        nextScale.setValue(Math.min(1, 0.9 + yDelta / 500));
+      onMoveShouldSetPanResponder: (_, { dy }) => {
+        // Only allow vertical upward movement
+        return dy < 0;
+      },
+      onPanResponderMove: (_, { dy }) => {
+        // Only allow upward movement (negative dy)
+        if (dy < 0) {
+          position.setValue({ x: 0, y: dy });
+          const yDelta = Math.abs(dy);
+          // Smooth scale transition
+          const newScale = Math.max(0.8, 1 - yDelta / 600);
+          scale.setValue(newScale);
+          // Move next card up slightly with easing
+          translateY.setValue(-dy * 0.08);
+          nextScale.setValue(Math.min(1, 0.9 + yDelta / 600));
+        }
       },
       onPanResponderRelease: (_, { dy, vy }) => {
-        if (Math.abs(dy) > 60) {
-          // Swipe threshold met - animate card away
+        if (dy < -40) { // Only trigger on upward swipe
+          // Professional smooth transition
           Animated.parallel([
             Animated.timing(position, {
               toValue: { x: 0, y: -height },
-              duration: 300,
+              duration: 400,
               useNativeDriver: true,
+              easing: Easing.bezier(0.4, 0.0, 0.2, 1), // Material Design easing
             }),
             Animated.timing(scale, {
-              toValue: 0.5,
-              duration: 300,
+              toValue: 0.7,
+              duration: 400,
               useNativeDriver: true,
+              easing: Easing.bezier(0.4, 0.0, 0.2, 1),
             }),
-            Animated.timing(rotate, {
-              toValue: -30,
-              duration: 300,
+            Animated.timing(translateY, {
+              toValue: 0,
+              duration: 400,
               useNativeDriver: true,
+              easing: Easing.bezier(0.4, 0.0, 0.2, 1),
             }),
             Animated.timing(nextScale, {
               toValue: 1,
-              duration: 300,
+              duration: 400,
               useNativeDriver: true,
+              easing: Easing.bezier(0.4, 0.0, 0.2, 1),
             }),
           ]).start(() => {
             const newIndex = (currentIndex + 1) % SAMPLE_EVENTS.length;
             setCurrentIndex(newIndex);
+            // Reset animations
             position.setValue({ x: 0, y: 0 });
             scale.setValue(1);
-            rotate.setValue(0);
+            translateY.setValue(0);
             nextScale.setValue(0.9);
           });
         } else {
-          // Return to center
+          // Smooth spring return animation
           Animated.parallel([
             Animated.spring(position, {
               toValue: { x: 0, y: 0 },
               useNativeDriver: true,
+              tension: 40,
+              friction: 7,
             }),
             Animated.spring(scale, {
               toValue: 1,
               useNativeDriver: true,
+              tension: 40,
+              friction: 7,
             }),
-            Animated.spring(rotate, {
+            Animated.spring(translateY, {
               toValue: 0,
               useNativeDriver: true,
+              tension: 40,
+              friction: 7,
             }),
             Animated.spring(nextScale, {
               toValue: 0.9,
               useNativeDriver: true,
+              tension: 40,
+              friction: 7,
             }),
           ]).start();
         }
@@ -138,15 +161,18 @@ const Events = ({ navigation }) => {
       transform: [
         ...position.getTranslateTransform(),
         { scale },
-        { rotate: rotate.interpolate({
-          inputRange: [-100, 0, 100],
-          outputRange: ['-30deg', '0deg', '30deg']
-        })},
+        { 
+          rotateX: rotateX.interpolate({
+            inputRange: [-45, 0, 45],
+            outputRange: ['-45deg', '0deg', '45deg']
+          })
+        },
       ],
       zIndex: 1,
     } : {
       transform: [
         { scale: nextScale },
+        { translateY: translateY },
       ],
       zIndex: 0,
     };
@@ -251,7 +277,7 @@ const Events = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000',
+    backgroundColor: '#333',
   },
   header: {
     flexDirection: 'row',
@@ -287,32 +313,42 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
-  calendarSection: {
-    height: height * 0.4,
-    backgroundColor: '#000',
-  },
   cardsContainer: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'flex-end',
     paddingHorizontal: 16,
+    paddingBottom: 8,
   },
   card: {
     position: 'absolute',
-    width: '100%',
-    height: height * 0.7,
+    width: width * 0.85,
+    height: height * 0.62,
     backgroundColor: '#1a1a1a',
     borderRadius: 20,
     overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: '#000',
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    bottom: 8,
   },
   cardContent: {
     flex: 1,
     justifyContent: 'space-between',
   },
   imageContainer: {
-    height: '75%',
+    height: '65%',
     borderRadius: 20,
     overflow: 'hidden',
+    borderBottomWidth: 1,
+    borderBottomColor: '#000',
   },
   image: {
     width: '100%',
@@ -333,13 +369,14 @@ const styles = StyleSheet.create({
   },
   eventInfo: {
     paddingHorizontal: 20,
-    paddingVertical: 16,
+    paddingVertical: 8,
+    backgroundColor: '#1a1a1a',
   },
   eventTitle: {
     fontSize: 32,
     fontWeight: 'bold',
     color: '#fff',
-    marginBottom: 8,
+    marginBottom: 4,
   },
   eventDate: {
     fontSize: 20,
@@ -350,12 +387,33 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    paddingBottom: 16,
-    gap: 24,
+    paddingVertical: 8,
+    gap: 32,
+    backgroundColor: 'rgba(0,0,0,0.3)',
+    marginHorizontal: 20,
+    marginBottom: 12,
+    marginTop: 4,
+    borderRadius: 15,
   },
   navButton: {
     margin: 0,
     backgroundColor: 'rgba(255,255,255,0.1)',
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+  },
+  calendarSection: {
+    position: 'absolute',
+    top: StatusBar.currentHeight + 60,
+    left: 0,
+    right: 0,
+    height: height * 0.35,
+    backgroundColor: '#1a1a1a',
+    zIndex: 2,
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20,
+    borderWidth: 1,
+    borderColor: '#000',
   },
 });
 
