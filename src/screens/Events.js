@@ -6,22 +6,26 @@ import {
   TouchableOpacity,
   ScrollView,
   Dimensions,
+  ImageBackground,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 const {width} = Dimensions.get('window');
 
-const ExploreScreen = ({navigation}) => {
+const Events = ({navigation}) => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Icon name="arrow-back" size={24} color="#000" />
+        </TouchableOpacity>
         <View style={styles.locationContainer}>
-          <Text style={styles.locationText}>Reykjavik</Text>
-          <Text style={styles.countryText}>Iceland</Text>
+          <Icon name="location" size={20} color="#000" />
+          <Text style={styles.locationText}>San Juan</Text>
         </View>
         <TouchableOpacity>
-          <Icon name="paper-plane-outline" size={24} color="#fff" />
+          <Icon name="search" size={24} color="#000" />
         </TouchableOpacity>
       </View>
 
@@ -29,31 +33,33 @@ const ExploreScreen = ({navigation}) => {
         horizontal
         pagingEnabled
         showsHorizontalScrollIndicator={false}
-        style={styles.carousel}>
-        <View style={styles.slide}>
-          <LinearGradient
-            colors={['#4b6cb7', '#182848']}
-            style={styles.gradient}>
-            <View style={styles.contentContainer}>
-              <Text style={styles.title}>Magic</Text>
-              <Text style={styles.subtitle}>Dreamland</Text>
-              <View style={styles.controls}>
-                <TouchableOpacity style={styles.controlButton}>
-                  <Icon name="play" size={24} color="#fff" />
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.controlButton}>
-                  <Icon name="heart-outline" size={24} color="#fff" />
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.controlButton}>
-                  <Icon name="share-social-outline" size={24} color="#fff" />
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.controlButton}>
-                  <Icon name="bookmark-outline" size={24} color="#fff" />
-                </TouchableOpacity>
+        style={styles.scrollView}>
+        <TouchableOpacity
+          onPress={() => navigation.navigate('Details')}
+          style={styles.slide}>
+          <ImageBackground
+            source={require('../assets/destination1.jpg')}
+            style={styles.slideBackground}>
+            <LinearGradient
+              colors={['transparent', 'rgba(0,0,0,0.8)']}
+              style={styles.gradient}>
+              <View style={styles.slideContent}>
+                <Text style={styles.slideTitle}>Salsa Night</Text>
+                <Text style={styles.slideSubtitle}>
+                  Dance the night away
+                </Text>
+                <View style={styles.controls}>
+                  <TouchableOpacity style={styles.controlButton}>
+                    <Icon name="heart-outline" size={24} color="#fff" />
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.controlButton}>
+                    <Icon name="share-social-outline" size={24} color="#fff" />
+                  </TouchableOpacity>
+                </View>
               </View>
-            </View>
-          </LinearGradient>
-        </View>
+            </LinearGradient>
+          </ImageBackground>
+        </TouchableOpacity>
       </ScrollView>
     </View>
   );
@@ -84,11 +90,15 @@ const styles = StyleSheet.create({
     color: 'rgba(255,255,255,0.6)',
     fontSize: 16,
   },
-  carousel: {
+  scrollView: {
     flex: 1,
   },
   slide: {
     width: width,
+    height: '100%',
+  },
+  slideBackground: {
+    width: '100%',
     height: '100%',
   },
   gradient: {
@@ -97,15 +107,15 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     paddingBottom: 40,
   },
-  contentContainer: {
+  slideContent: {
     width: '100%',
   },
-  title: {
+  slideTitle: {
     color: '#fff',
     fontSize: 42,
     fontWeight: '300',
   },
-  subtitle: {
+  slideSubtitle: {
     color: '#fff',
     fontSize: 42,
     fontWeight: 'bold',
@@ -127,4 +137,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ExploreScreen; 
+export default Events; 

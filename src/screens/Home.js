@@ -13,7 +13,7 @@ import LinearGradient from 'react-native-linear-gradient';
 
 const {width, height} = Dimensions.get('window');
 
-const WelcomeScreen = ({navigation}) => {
+const Home = ({navigation}) => {
   const fadeAnim = new Animated.Value(0);
   const translateY = new Animated.Value(20);
 
@@ -64,7 +64,7 @@ const WelcomeScreen = ({navigation}) => {
             </Text>
             <TouchableOpacity
               style={styles.button}
-              onPress={() => navigation.navigate('Explore')}>
+              onPress={() => navigation.navigate('Events')}>
               <LinearGradient
                 colors={['rgba(255,255,255,0.3)', 'rgba(255,255,255,0.2)']}
                 start={{x: 0, y: 0}}
@@ -166,4 +166,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default WelcomeScreen; 
+export default Home; 

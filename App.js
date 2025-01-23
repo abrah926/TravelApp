@@ -4,9 +4,9 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {StatusBar} from 'react-native';
 
 // Import our screens
-import WelcomeScreen from './src/screens/WelcomeScreen';
-import ExploreScreen from './src/screens/ExploreScreen';
-import DetailScreen from './src/screens/DetailScreen';
+import Home from './src/screens/Home';
+import Events from './src/screens/Events';
+import Details from './src/screens/Details';
 
 const Stack = createNativeStackNavigator();
 
@@ -19,9 +19,9 @@ const App = () => {
           headerShown: false,
           contentStyle: {backgroundColor: '#000'},
         }}>
-        <Stack.Screen name="Welcome" component={WelcomeScreen} />
-        <Stack.Screen name="Explore" component={ExploreScreen} />
-        <Stack.Screen name="Detail" component={DetailScreen} />
+        <Stack.Screen name="Home" component={Home} />
+        <Stack.Screen name="Events" component={Events} />
+        <Stack.Screen name="Details" component={Details} />
       </Stack.Navigator>
     </NavigationContainer>
   );

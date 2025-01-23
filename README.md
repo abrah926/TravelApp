@@ -96,7 +96,7 @@ To learn more about React Native, take a look at the following resources:
 - [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
 - [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
 
-# TravelApp - React Native Project
+# Salsa - React Native Project
 
 > This app is designed to work seamlessly on both iOS and Android platforms, providing a consistent experience across devices.
 
@@ -153,7 +153,7 @@ To learn more about React Native, take a look at the following resources:
 #### Directory Structure
 
 ```
-TravelApp/
+Salsa/
 ├── android/                 # Android native code
 ├── src/
 │   ├── assets/             # Images and other assets
@@ -161,9 +161,9 @@ TravelApp/
 │   │   ├── destination1.jpg
 │   │   └── architecture.jpg
 │   └── screens/            # React Native screens
-│       ├── WelcomeScreen.js
-│       ├── ExploreScreen.js
-│       └── DetailScreen.js
+│       ├── Home.js
+│       ├── Events.js
+│       └── Details.js
 ├── App.js                  # Main app component
 ├── index.js               # Entry point
 ├── app.json              # App configuration
@@ -179,9 +179,9 @@ TravelApp/
    mkdir REACT_NATIVE && cd REACT_NATIVE
 
    # Create the React Native project
-   npx react-native@0.72.17 init TravelApp
+   npx react-native@0.72.17 init Salsa
 
-   cd TravelApp
+   cd Salsa
    ```
 
 2. **Install Dependencies**
@@ -200,8 +200,8 @@ TravelApp/
 3. **Running the App (Working Command)**
 
    ```bash
-   # Make sure you're in the TravelApp directory
-   cd TravelApp
+   # Make sure you're in the Salsa directory
+   cd Salsa
 
    # Run the Android app (this command worked successfully)
    npx react-native run-android
@@ -216,7 +216,7 @@ TravelApp/
 
 2. **Running the App**
 
-   - Always run commands from the TravelApp directory
+   - Always run commands from the Salsa directory
    - Use `npx react-native run-android` directly instead of npm scripts
    - No need to start Metro separately, it will start automatically
 
@@ -224,7 +224,7 @@ TravelApp/
    If the app stops working:
    1. Compare your files with the backup in `/home/abrah926/Desktop/TravelApp_Backup/`
    2. Ensure you're using the exact versions specified in package.json
-   3. Run from the TravelApp directory using the exact command above
+   3. Run from the Salsa directory using the exact command above
 
 ## Development Tips
 
