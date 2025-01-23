@@ -148,7 +148,9 @@ To learn more about React Native, take a look at the following resources:
 }
 ```
 
-### Project Structure
+### Project Structure and Files
+
+#### Directory Structure
 
 ```
 TravelApp/
@@ -168,12 +170,12 @@ TravelApp/
 └── package.json
 ```
 
-## Installation Steps
+### Installation and Setup
 
 1. **Initial Setup**
 
    ```bash
-   # Create a new directory and navigate into it
+   # Create parent directory and navigate into it
    mkdir REACT_NATIVE && cd REACT_NATIVE
 
    # Create the React Native project
@@ -195,97 +197,34 @@ TravelApp/
    npm install react-native-linear-gradient@2.8.3 react-native-paper@5.13.1 react-native-vector-icons@10.2.0
    ```
 
-3. **Asset Setup**
-
-   - Create `src/assets` directory
-   - Add required images:
-     - `mountain.jpg` (Welcome screen background)
-     - `destination1.jpg` (Explore screen)
-     - `architecture.jpg` (Explore screen)
-
-4. **Android Configuration**
+3. **Running the App (Working Command)**
 
    ```bash
-   # Navigate to android directory
-   cd android
+   # Make sure you're in the TravelApp directory
+   cd TravelApp
 
-   # Clean the project
-   ./gradlew clean
-
-   # Return to project root
-   cd ..
-   ```
-
-## Running the App
-
-1. **Start Metro Server**
-
-   ```bash
-   # Start with clean cache (recommended for first run)
-   npx react-native start --reset-cache
-   ```
-
-2. **Run on Android**
-   ```bash
-   # In a new terminal
+   # Run the Android app (this command worked successfully)
    npx react-native run-android
    ```
 
-## Troubleshooting
+### Important Notes
 
-1. **Port 8081 Already in Use**
+1. **File Locations**
 
-   ```bash
-   # Kill the process using port 8081
-   npx kill-port 8081
-   # Or more aggressively
-   pkill -f metro
-   ```
+   - All source files are backed up at: `/home/abrah926/Desktop/TravelApp_Backup/`
+   - This backup contains the exact working state of the app
 
-2. **Metro Bundler Issues**
+2. **Running the App**
 
-   ```bash
-   # Clear Metro cache
-   npx react-native start --reset-cache
-   ```
+   - Always run commands from the TravelApp directory
+   - Use `npx react-native run-android` directly instead of npm scripts
+   - No need to start Metro separately, it will start automatically
 
-3. **Navigation Issues**
-
-   - Ensure all screen components are properly exported
-   - Check navigation stack configuration in App.js
-   - Verify import paths are correct
-   - Make sure react-native-screens version is 4.0.0 or compatible
-
-4. **Build Issues**
-
-   ```bash
-   # Clean Android build
-   cd android && ./gradlew clean && cd ..
-
-   # Remove node_modules and reinstall
-   rm -rf node_modules package-lock.json
-   npm install
-   ```
-
-## Important Notes
-
-1. **Version Compatibility**
-
-   - React Native version must be 0.72.17
-   - React Navigation versions must match exactly as specified
-   - react-native-screens must be version 4.0.0 for compatibility
-
-2. **Asset Requirements**
-
-   - All images should be high quality and properly sized
-   - Recommended to use .jpg format for backgrounds
-   - Place all assets in src/assets directory
-
-3. **Android Setup**
-   - Minimum SDK version: 21
-   - Target SDK version: 33
-   - Compile SDK version: 33
-   - JDK version: 17
+3. **Troubleshooting**
+   If the app stops working:
+   1. Compare your files with the backup in `/home/abrah926/Desktop/TravelApp_Backup/`
+   2. Ensure you're using the exact versions specified in package.json
+   3. Run from the TravelApp directory using the exact command above
 
 ## Development Tips
 

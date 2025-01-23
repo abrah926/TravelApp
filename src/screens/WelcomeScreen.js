@@ -36,7 +36,7 @@ const WelcomeScreen = ({navigation}) => {
     <View style={styles.container}>
       <StatusBar translucent backgroundColor="transparent" />
       <ImageBackground
-        source={require('../assets/mountain.jpg')}
+        source={require('../assets/bio_beach.jpg')}
         style={styles.background}
         imageStyle={styles.backgroundImage}>
         <LinearGradient
@@ -70,7 +70,7 @@ const WelcomeScreen = ({navigation}) => {
                 start={{x: 0, y: 0}}
                 end={{x: 1, y: 0}}
                 style={styles.buttonGradient}>
-                <Text style={styles.buttonText}>Discover More</Text>
+                <Text style={styles.buttonText}>Salsa Events</Text>
               </LinearGradient>
             </TouchableOpacity>
           </Animated.View>
