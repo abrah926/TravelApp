@@ -14,6 +14,14 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const { width, height } = Dimensions.get('window');
 
+const formatTitle = (title) => {
+  // If title is longer than 20 chars, reduce font size
+  return {
+    text: title.replace(/\n/g, ' '), // Remove any line breaks
+    fontSize: title.length > 20 ? 28 : 32
+  };
+};
+
 // Sample data - replace with DB data later
 const SAMPLE_EVENTS = [
   {
@@ -154,6 +162,7 @@ const Events = ({ navigation }) => {
   const renderEventCard = (event, index) => {
     const isCurrentCard = index === currentIndex;
     const isNextCard = index === (currentIndex + 1) % SAMPLE_EVENTS.length;
+    const formattedTitle = formatTitle(event.title);
     
     if (!isCurrentCard && !isNextCard) return null;
 
@@ -205,7 +214,16 @@ const Events = ({ navigation }) => {
 
           {/* Event Info */}
           <View style={styles.eventInfo}>
-            <Text style={styles.eventTitle}>{event.title}</Text>
+            <Text 
+              style={[
+                styles.eventTitle,
+                { fontSize: formattedTitle.fontSize }
+              ]}
+              numberOfLines={1}
+              ellipsizeMode="tail"
+            >
+              {formattedTitle.text}
+            </Text>
             <Text style={styles.eventDate}>{formatDate(event.date)}</Text>
           </View>
 
@@ -371,9 +389,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 8,
     backgroundColor: '#1a1a1a',
+    height: 80, // Fixed height to maintain consistent spacing
+    justifyContent: 'center', // Center content vertically
   },
   eventTitle: {
-    fontSize: 32,
     fontWeight: 'bold',
     color: '#fff',
     marginBottom: 4,
