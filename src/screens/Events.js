@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useMemo } from 'react';
 import {
   View,
   StatusBar,
@@ -8,6 +8,8 @@ import {
   Animated,
   PanResponder,
   Easing,
+  Image,
+  TouchableOpacity,
 } from 'react-native';
 import { Text, IconButton, Surface } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -27,42 +29,91 @@ const SAMPLE_EVENTS = [
   {
     id: 1,
     title: 'Salsa Night Fever',
-    date: new Date(2024, 0, 15),
+    date: '2024-01-15',
     time: '20:00',
     location: { lat: 18.4655, lng: -66.1057 },
-    image: require('../assets/destination1.jpg'),
+    image: require('../assets/bio_beach.jpg'),
   },
   {
     id: 2,
     title: 'Bachata Under Stars',
-    date: new Date(2024, 0, 18),
+    date: '2024-01-18',
     time: '21:00',
     location: { lat: 18.4571, lng: -66.1185 },
-    image: require('../assets/destination1.jpg'),
+    image: require('../assets/mountain.jpg'),
   },
   {
     id: 3,
     title: 'Latin Dance Social',
-    date: new Date(2024, 0, 20),
+    date: '2024-01-20',
     time: '19:30',
     location: { lat: 18.4499, lng: -66.0988 },
-    image: require('../assets/destination1.jpg'),
+    image: require('../assets/architecture.jpg'),
   },
 ];
 
 const formatDate = (date) => {
   const days = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
-  return `${days[date.getDay()]} ${date.getDate()}`;
+  const d = new Date(date);
+  return `${days[d.getDay()]} ${d.getDate()}`;
+};
+
+const generateCalendarDays = (currentDate = new Date()) => {
+  const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const firstDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+  const lastDay = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+  
+  let calendarDays = [];
+  let dayCount = 1;
+  
+  // Add empty spaces for days before the first day of the month
+  for (let i = 0; i < firstDay.getDay(); i++) {
+    calendarDays.push('');
+  }
+  
+  // Add all days of the month
+  while (dayCount <= lastDay.getDate()) {
+    calendarDays.push(dayCount);
+    dayCount++;
+  }
+  
+  return { days, calendarDays };
 };
 
 const Events = ({ navigation }) => {
   const [isCalendarVisible, setIsCalendarVisible] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [selectedDate, setSelectedDate] = useState(new Date(SAMPLE_EVENTS[0].date));
   const position = useRef(new Animated.ValueXY()).current;
   const scale = useRef(new Animated.Value(1)).current;
   const rotateX = useRef(new Animated.Value(0)).current;
   const translateY = useRef(new Animated.Value(0)).current;
   const nextScale = useRef(new Animated.Value(0.9)).current;
+
+  // Create marked dates object for calendar
+  const markedDates = SAMPLE_EVENTS.reduce((acc, event) => {
+    acc[event.date] = {
+      marked: true,
+      dotColor: '#E94560',
+      selected: event.date === selectedDate.toISOString().split('T')[0],
+      selectedColor: '#E94560',
+    };
+    return acc;
+  }, {});
+
+  const { days, calendarDays } = useMemo(() => generateCalendarDays(selectedDate), [selectedDate]);
+
+  const handleDateSelect = (day) => {
+    if (!day) return;
+    const date = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), day);
+    setSelectedDate(date);
+    const eventIndex = SAMPLE_EVENTS.findIndex(
+      event => new Date(event.date).toDateString() === date.toDateString()
+    );
+    if (eventIndex !== -1) {
+      setCurrentIndex(eventIndex);
+    }
+  };
 
   const panResponder = useRef(
     PanResponder.create({
@@ -237,14 +288,14 @@ const Events = ({ navigation }) => {
               style={styles.navButton}
             />
             <IconButton
-              icon="help-circle"
+              icon="information-outline"
               size={20}
               iconColor="#fff"
               onPress={() => navigation.navigate('Details', { event })}
               style={styles.navButton}
             />
             <IconButton
-              icon="adjust"
+              icon="account-group"
               size={20}
               iconColor="#fff"
               onPress={() => navigation.navigate('Contacts')}
@@ -262,25 +313,68 @@ const Events = ({ navigation }) => {
       
       {/* Header */}
       <View style={styles.header}>
-        <View style={styles.calendarContainer}>
-          <Icon name="calendar-outline" size={24} color="#fff" />
-          <Icon 
-            name={isCalendarVisible ? "chevron-up" : "chevron-down"} 
-            size={20} 
-            color="#fff"
-            style={styles.chevron}
+        <TouchableOpacity 
+          style={styles.calendarContainer}
+          onPress={() => setIsCalendarVisible(!isCalendarVisible)}
+        >
+          <Image 
+            source={require('../assets/calendar.png')} 
+            style={styles.calendarIcon}
           />
-        </View>
+          <Image 
+            source={require('../assets/chevron.png')} 
+            style={[
+              styles.chevronIcon,
+              { transform: [{ rotate: isCalendarVisible ? '180deg' : '0deg' }] }
+            ]}
+          />
+        </TouchableOpacity>
         <Text style={styles.title}>Salsa Events</Text>
         <Surface style={styles.customIconContainer}>
           <View style={styles.iconPlaceholder} />
         </Surface>
       </View>
 
-      {/* Calendar Section - Will be implemented later */}
+      {/* Calendar Section */}
       {isCalendarVisible && (
         <View style={styles.calendarSection}>
-          {/* Calendar component will go here */}
+          <View style={styles.monthHeader}>
+            <Text style={styles.monthText}>
+              {selectedDate.toLocaleString('default', { month: 'long', year: 'numeric' })}
+            </Text>
+          </View>
+          <View style={styles.daysHeader}>
+            {days.map((day, index) => (
+              <Text key={index} style={styles.dayText}>{day}</Text>
+            ))}
+          </View>
+          <View style={styles.datesGrid}>
+            {calendarDays.map((day, index) => (
+              <TouchableOpacity
+                key={index}
+                style={[
+                  styles.dateCell,
+                  day && selectedDate.getDate() === day && styles.selectedDate,
+                  SAMPLE_EVENTS.some(event => 
+                    new Date(event.date).getDate() === day && 
+                    new Date(event.date).getMonth() === selectedDate.getMonth()
+                  ) && styles.eventDate
+                ]}
+                onPress={() => handleDateSelect(day)}
+              >
+                <Text style={[
+                  styles.dateText,
+                  day && selectedDate.getDate() === day && styles.selectedDateText,
+                  SAMPLE_EVENTS.some(event => 
+                    new Date(event.date).getDate() === day && 
+                    new Date(event.date).getMonth() === selectedDate.getMonth()
+                  ) && styles.eventDateText
+                ]}>
+                  {day || ''}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
         </View>
       )}
 
@@ -295,7 +389,7 @@ const Events = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#333',
+    backgroundColor: '#1A1A2E', // Rich dark blue background
   },
   header: {
     flexDirection: 'row',
@@ -304,28 +398,43 @@ const styles = StyleSheet.create({
     paddingTop: StatusBar.currentHeight + 10,
     paddingHorizontal: 16,
     paddingBottom: 16,
+    backgroundColor: 'rgba(255,255,255,0.03)', // Subtle glass effect
   },
   calendarContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255,255,255,0.1)',
-    borderRadius: 25,
     padding: 8,
+    backgroundColor: 'transparent',
+    borderWidth: 0,
   },
-  chevron: {
+  calendarIcon: {
+    width: 24,
+    height: 24,
+    tintColor: '#fff',
+  },
+  chevronIcon: {
+    width: 20,
+    height: 20,
+    tintColor: '#fff',
     marginLeft: 4,
   },
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: '600',
     color: '#fff',
+    letterSpacing: 0.5,
+    textShadowColor: 'rgba(0, 0, 0, 0.75)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
   },
   customIconContainer: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: 'rgba(255,255,255,0.1)',
+    backgroundColor: 'rgba(255,255,255,0.08)',
     overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.1)',
   },
   iconPlaceholder: {
     width: '100%',
@@ -336,26 +445,26 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'flex-end',
     paddingHorizontal: 16,
-    paddingBottom: 8,
+    paddingBottom: 16,
+    paddingTop: 26,
   },
   card: {
     position: 'absolute',
     width: width * 0.85,
     height: height * 0.62,
-    backgroundColor: '#1a1a1a',
-    borderRadius: 20,
+    backgroundColor: '#16213E', // Rich dark blue for cards
+    borderRadius: 25,
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: '#000',
-    elevation: 5,
+    borderColor: 'rgba(255,255,255,0.1)',
+    elevation: 8,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: 4,
     },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    bottom: 8,
+    shadowOpacity: 0.45,
+    shadowRadius: 6,
   },
   cardContent: {
     flex: 1,
@@ -363,76 +472,142 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     height: '65%',
-    borderRadius: 20,
+    borderRadius: 25,
     overflow: 'hidden',
     borderBottomWidth: 1,
-    borderBottomColor: '#000',
+    borderBottomColor: 'rgba(255,255,255,0.1)',
   },
   image: {
     width: '100%',
     height: '100%',
   },
   imageStyle: {
-    borderRadius: 20,
+    borderRadius: 25,
   },
   locationButton: {
     position: 'absolute',
     top: 16,
     right: 16,
-    backgroundColor: 'rgba(0,0,0,0.3)',
+    backgroundColor: 'rgba(0,0,0,0.5)',
     borderRadius: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.2)',
+    elevation: 3,
   },
   iconButton: {
     margin: 0,
   },
   eventInfo: {
     paddingHorizontal: 20,
-    paddingVertical: 8,
-    backgroundColor: '#1a1a1a',
-    height: 80, // Fixed height to maintain consistent spacing
-    justifyContent: 'center', // Center content vertically
+    paddingVertical: 12,
+    backgroundColor: 'rgba(22, 33, 62, 0.95)', // Slightly transparent
+    height: 80,
+    justifyContent: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255,255,255,0.1)',
   },
   eventTitle: {
-    fontWeight: 'bold',
+    fontWeight: '600',
     color: '#fff',
     marginBottom: 4,
+    letterSpacing: 0.5,
+    textShadowColor: 'rgba(0, 0, 0, 0.75)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
   },
   eventDate: {
     fontSize: 20,
-    color: '#fff',
+    color: '#E94560', // Accent color for dates
     letterSpacing: 2,
+    fontWeight: '500',
   },
   bottomNav: {
     flexDirection: 'row',
-    justifyContent: 'center',
+    justifyContent: 'space-around',
     alignItems: 'center',
     paddingVertical: 8,
-    gap: 32,
-    backgroundColor: 'rgba(0,0,0,0.3)',
-    marginHorizontal: 20,
-    marginBottom: 12,
-    marginTop: 4,
-    borderRadius: 15,
+    backgroundColor: 'rgba(22, 33, 62, 0.98)',
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255,255,255,0.1)',
   },
   navButton: {
     margin: 0,
-    backgroundColor: 'rgba(255,255,255,0.1)',
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    backgroundColor: 'rgba(255,255,255,0.05)',
+    borderRadius: 15,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.1)',
   },
   calendarSection: {
-    position: 'absolute',
-    top: StatusBar.currentHeight + 60,
-    left: 0,
-    right: 0,
-    height: height * 0.35,
+    width: '100%',
     backgroundColor: '#1a1a1a',
-    zIndex: 2,
-    borderBottomLeftRadius: 20,
-    borderBottomRightRadius: 20,
-    borderWidth: 1,
-    borderColor: '#000',
+    borderRadius: 20,
+    paddingVertical: 12,
+    paddingHorizontal: 8,
+    marginBottom: 16,
+  },
+  monthHeader: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  monthText: {
+    color: '#ffffff',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  daysHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 8,
+    paddingHorizontal: 4,
+  },
+  dayText: {
+    color: '#E94560',
+    width: (width - 24) / 7,
+    textAlign: 'center',
+    fontWeight: 'bold',
+    fontSize: 14,
+  },
+  datesGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    paddingHorizontal: 4,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  dateCell: {
+    width: (width - 24) / 7,
+    height: 36,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 0,
+    margin: 0,
+  },
+  dateText: {
+    color: '#ffffff',
+    fontSize: 16,
+    textAlign: 'center',
+    width: (width - 24) / 7,
+    height: 36,
+    lineHeight: 36,
+    paddingHorizontal: 0,
+  },
+  selectedDate: {
+    backgroundColor: 'transparent',
+  },
+  selectedDateText: {
+    color: '#E94560',
+    fontWeight: 'bold',
+    textAlignVertical: 'center',
+    includeFontPadding: false,
+    lineHeight: 36,
+  },
+  eventDate: {
+    // Remove any border or underline styles
+  },
+  eventDateText: {
+    color: '#E94560',
   },
 });
 
